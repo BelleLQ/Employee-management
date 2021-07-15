@@ -146,3 +146,22 @@ module.exports.getDepartments = function(){
     resolve(departments);
    });
 }
+
+module.exports.updateEmployee = function(employeeData){
+    return new Promise(function (resolve, reject) {
+        var found = false;
+        for (let i = 0; i < employees.length; i++) {
+            if (employees[i].employeeNum == employeeData.employeeNum) {
+                employees[i]=employeeData;
+                found = true;
+            }
+        }
+        console.log(found);
+
+        if (!found) {
+            reject("could not find the employee"); return;
+        }
+
+        resolve();
+    });
+}

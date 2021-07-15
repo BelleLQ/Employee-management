@@ -128,11 +128,11 @@ app.get("/employee/:empNum", (req, res) => {
     });
 });
 
-app.get("/managers", (req,res) => {
+/*app.get("/managers", (req,res) => {
     data.getManagers().then((data)=>{
         res.json(data);
     });
-});
+});*/
 
 app.get("/departments", (req,res) => {
     data.getDepartments().then((data)=>{
@@ -147,6 +147,14 @@ app.post("/employees/add", (req, res) => {
       res.redirect("/employees");
     });
   });
+
+  app.post("/employee/update", (req, res) => {
+    data.updateEmployee(req.body).then(()=>{
+        console.log(req.body);
+    res.redirect("/employees");
+    });
+});
+
 
 app.post("/images/add", upload.single("imageFile"), (req,res) =>{
     res.redirect("/images");
