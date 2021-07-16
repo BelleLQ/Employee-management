@@ -1,3 +1,15 @@
+/*********************************************************************************
+*  WEB322 – Assignment 03
+*  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part 
+*  of this assignment has been copied manually or electronically from any other source 
+*  (including 3rd party web sites) or distributed to other students.
+* 
+*  Name: __Yu-Hsuan Liao___ Student ID: __160096194_ Date: _Jul 16th, 2021_
+*
+*  Online (Heroku) Link: ________________________________________________________
+*
+********************************************************************************/ 
+
 const express = require("express");
 const exphbs = require("express-handlebars");
 const path = require("path");
@@ -73,12 +85,9 @@ app.get("/employees/add", (req,res) => {
 });
 
 app.get("/images", (req,res) => {
-    const images=[]; 
     fs.readdir("./public/images/uploaded", function(err, items) {
         //res.json({images:items});
-        var Notempty = true;
-        if(!images.length) Notempty = false;
-        res.render("images", {images:items, Notempty}); 
+        res.render("images", {images:items}); 
     });
 });
 

@@ -4,29 +4,32 @@
           <hr />
           <div class="table-responsive">
               <table class="table">
-                  <tr>
-                  <th>Employee Num</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
-                  <th>Address</th>
-                  <th>Manager ID</th>
-                  <th>Status</th>
-                  <th>Department</th>
-                  <th>Hired On</th>
-                  </tr>
-
-                {{#each employees}}
-                <tr>
-                    <td>{{this.employeeNum}}</td>
-                    <td><a href="/employee/{{this.employeeNum}}">{{this.firstName}} {{this.lastName}}</a></td>
-                    <td><a href="mailto:{{this.email}}">{{this.email}}</a></td>
-                    <td>{{this.addressStreet}} {{this.addressCity}} {{this.addressState}} {{this.addressPostal}}</td>
-                    <td><a href="/employees?manager={{this.employeeManagerNum}}">{{this.employeeManagerNum}}</a></td>
-                    <td><a href="/employee?status="{{this.status}}"">{{this.status}}</a></td>
-                    <td><a href="/employees?department={{this.department}}">{{this.department}}</td>
-                    <td>{{this.hireDate}}</td>
-                </tr>
-                {{/each}}
+                <thead>
+                    <tr>
+                    <th>Employee&nbsp;Num</th>
+                    <th>Full&nbsp;Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Manager&nbsp;ID</th>
+                    <th>Status&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th>Department</th>
+                    <th>Hired&nbsp;On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each employees}}
+                    <tr>
+                        <td>{{this.employeeNum}}</td>
+                        <td><a href="/employee/{{this.employeeNum}}">{{this.firstName}} {{this.lastName}}</a></td>
+                        <td><a href="mailto:{{this.email}}">{{this.email}}</a></td>
+                        <td>{{this.addressStreet}} {{this.addressCity}} {{this.addressState}} {{this.addressPostal}}</td>
+                        <td><a href="/employees?manager={{this.employeeManagerNum}}">{{this.employeeManagerNum}}</a></td>
+                        <td><a href="/employee?status="{{this.status}}"">{{this.status}}</a></td>
+                        <td><a href="/employees?department={{this.department}}">{{this.department}}</td>
+                        <td>{{this.hireDate}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
               </table>
           </div>
     </div>
