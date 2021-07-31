@@ -1,10 +1,10 @@
 /*********************************************************************************
-*  WEB322 – Assignment 03
+*  WEB322 – Assignment 04
 *  I declare that this assignment is my own work in accordance with Seneca  Academic Policy.  No part 
 *  of this assignment has been copied manually or electronically from any other source 
 *  (including 3rd party web sites) or distributed to other students.
 * 
-*  Name: __Yu-Hsuan Liao___ Student ID: __160096194_ Date: _Jul 16th, 2021_
+*  Name: __Yu-Hsuan Liao___ Student ID: __160096194_ Date: _Jul 30th, 2021_
 *
 *  Online (Heroku) Link: https://yliaoassign3.herokuapp.com/
 *
@@ -81,7 +81,13 @@ app.get("/images/add", (req,res) => {
 });
 
 app.get("/employees/add", (req,res) => {
-    res.render("addEmployee.handlebars");
+    data.getDepartments().then((data) => {
+        //res.json(data);
+        res.render("addEmployee", { departments: data }); 
+    }).catch((err) => {
+        //res.json({message:"no results"});
+        res.render("addEmployee", {departments: null});  
+    });
 });
 
 app.get("/images", (req,res) => {
@@ -94,46 +100,83 @@ app.get("/images", (req,res) => {
 app.get("/employees", (req, res) => {
     if (req.query.status) {
         data.getEmployeesByStatus(req.query.status).then((data) => {
-            //res.json(data);
-            res.render("employees", {employees: data});
-        }).catch((err) => {
-            //res.json({ message: "no results" });
-            res.render("employees", {message: "no results"});
-        });
+            if (data.length > 0) {
+                res.render("employees", { employees: data });
+            } else {
+                res.render("employees", { message: "no results" });
+            }
+        })
     } else if (req.query.department) {
         data.getEmployeesByDepartment(req.query.department).then((data) => {
-            //res.json(data);
-            res.render("employees", {employees: data});
-        }).catch((err) => {
-            //res.json({ message: "no results" });
-            res.render("employees", {message: "no results"});
-        });
+            if (data.length > 0) {
+                res.render("employees", { employees: data });
+            } else {
+                res.render("employees", { message: "no results" });
+            }
+        })
     } else if (req.query.manager) {
         data.getEmployeesByManager(req.query.manager).then((data) => {
-            //res.json(data);
-            res.render("employees", {employees: data});
+            if (data.length > 0) {
+                res.render("employees", { employees: data });
+            } else {
+                res.render("employees", { message: "no results" });
+            }
         }).catch((err) => {
-            //res.json({ message: "no results" });
-            res.render("employees", {message: "no results"});
+            res.render("employees", { message: "no results" });
         });
     } else {
         data.getAllEmployees().then((data) => {
-            //res.json(data);
-            res.render("employees", {employees: data});
+            if (data.length > 0) {
+                res.render("employees", { employees: data });
+            } else {
+                res.render("employees", { message: "no results" });
+            }
         }).catch((err) => {
-            //res.json({ message: "no results" });
-            res.render("employees", {message: "no results"});
+            res.render("employees", { message: "no results" });
         });
     }
 });
 
 app.get("/employee/:empNum", (req, res) => {
+    // initialize an empty object to store the values
+    let viewData = {};
     data.getEmployeeByNum(req.params.empNum).then((data) => {
+            if (data) {
+                viewData.employee = data; //store employee data in the "viewData" object as "employee"
+            } else {
+                viewData.employee = null; // set employee to null if none were returned
+            }
+        }).catch(() => {
+            viewData.employee = null; // set employee to null if there was an error 
+        }).then(data.getDepartments)
+        .then((data) => {
+            viewData.departments = data; // store department data in the "viewData" object as "departments"
+            // loop through viewData.departments and once we have found the departmentId that matches
+            // the employee's "department" value, add a "selected" property to the matching 
+            // viewData.departments object
+            for (let i = 0; i < viewData.departments.length; i++) {
+                if (viewData.departments[i].dataValues.departmentId == viewData.employee.dataValues.department) {
+                    viewData.departments[i].selected = true;
+                }
+            }
+        }).catch(() => {
+            viewData.departments = []; // set departments to empty if there was an error
+        }).then(() => {
+            if (viewData.employee == null) { // if no employee - return an error
+                res.status(404).send("Employee Not Found");
+            } else {
+                res.render("employee", { data: viewData }); // render the "employee" view
+            }
+        });
+});
+
+app.get("/employees/delete/:empNum", (req, res) => {
+    data.deleteEmployeeByNum(req.params.empNum).then(() => {
         //res.json(data);
-        res.render("employee", { employee: data }); 
+        res.redirect("/employees"); 
     }).catch((err) => {
         //res.json({message:"no results"});
-        res.render("employee",{message:"no results"}); 
+        res.status(500).send("Unable to Remove Employee / Employee not found"); 
     });
 });
 
@@ -146,7 +189,35 @@ app.get("/employee/:empNum", (req, res) => {
 app.get("/departments", (req,res) => {
     data.getDepartments().then((data)=>{
         //res.json(data);
-        res.render("departments", {departments: data});
+        if(data.length>0) res.render("departments", {departments: data});
+        
+        else res.render("departments", {message: "no results"});
+    }).catch((err) => {
+        //res.json({message:"no results"});
+        res.render("departments",{message:"no results"});
+    });
+});
+
+app.get("/departments/add", (req,res) => {
+    res.render("addDepartment.handlebars");
+});
+
+app.get("/department/:departmentId", (req, res) => {
+    data.getDepartmentById(req.params.departmentId).then((data) => {
+        console.log(data);
+        res.render("department", { department: data });
+    }).catch((err) => {
+        res.status(404).send("Department Not Found");
+    });
+});
+
+app.get("/department/delete/:departmentId", (req, res) => {
+    data.deleteDepartmentById(req.params.departmentId).then(() => {
+        //res.json(data);
+        res.redirect("/departments"); 
+    }).catch((err) => {
+        //res.json({message:"no results"});
+        res.status(500).send("Unable to Remove Department / Department not found"); 
     });
 });
 
@@ -154,13 +225,16 @@ app.get("/departments", (req,res) => {
 app.post("/employees/add", (req, res) => {
     data.addEmployee(req.body).then(()=>{
       res.redirect("/employees");
+    }).catch((err) => {
+        res.status(500).send("Unable to Add Employee");
     });
   });
 
-  app.post("/employee/update", (req, res) => {
+app.post("/employee/update", (req, res) => {
     data.updateEmployee(req.body).then(()=>{
-        console.log(req.body);
-    res.redirect("/employees");
+        res.redirect("/employees");
+    }).catch((err) => {
+        res.status(500).send("Unable to Update Employee");
     });
 });
 
@@ -169,6 +243,21 @@ app.post("/images/add", upload.single("imageFile"), (req,res) =>{
     res.redirect("/images");
 });
 
+app.post("/departments/add", (req, res) => {
+    data.addDepartment(req.body).then(()=>{
+      res.redirect("/departments");
+    }).catch((err) => {
+        res.status(500).send("Unable to Add Department");
+    });
+  });
+
+app.post("/departments/update", (req, res) => {
+    data.updateDepartment(req.body).then(()=>{
+        res.redirect("/departments");
+    }).catch((err) => {
+        res.status(500).send("Unable to Update Department");
+    });
+});
 
 app.use((req, res) => {
     res.status(404).send("Page Not Found");
