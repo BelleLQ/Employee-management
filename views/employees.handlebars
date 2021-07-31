@@ -24,7 +24,7 @@
                         <td><a href="mailto:{{this.dataValues.email}}">{{this.dataValues.email}}</a></td>
                         <td>{{this.dataValues.addressStreet}} {{this.dataValues.addressCity}} {{this.dataValues.addressState}} {{this.dataValues.addressPostal}}</td>
                         <td><a href="/employees?manager={{this.dataValues.employeeManagerNum}}">{{this.dataValues.employeeManagerNum}}</a></td>
-                        <td><a href="/employee?status="{{this.dataValues.status}}"">{{this.dataValues.status}}</a></td>
+                        <td><a href="/employees?status={{this.dataValues.status}}">{{this.dataValues.status}}</a></td>
                         <td><a href="/employees?department={{this.dataValues.department}}">{{this.dataValues.department}}</td>
                         <td>{{this.dataValues.hireDate}}</td>
                         <td><a class="btn btn-danger" href="employees/delete/{{this.dataValues.employeeNum}}">remove</a></td>
