@@ -18,6 +18,7 @@ const bodyParser = require('body-parser');
 const fs = require("fs");
 const multer = require("multer");
 const app = express();
+const dataServiceAuth = require("data-service-auth.js" )
 
 app.engine('handlebars', exphbs({
     extname: '.handlebars',
