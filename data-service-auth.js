@@ -1,16 +1,22 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-    "userName" : {
-        "type": String,
-        "unique": true
-    },
-    "password": String,
-    "email":String,
-    "loginHistory":[{"dateTime":Date,"userAgent":String}]
+	userName: {
+		type: String,
+		unique: true
+	},
+	password: String,
+	email: String,
+	loginHistory: [
+		{
+			dataTime: Date,
+			userAgent: String
+		}
+	]
 });
-let User; // to be defined on new connection (see initialize)
+
+let User;
 
 module.exports.initialize = function () {
     return new Promise(function (resolve, reject) {
@@ -25,21 +31,33 @@ module.exports.initialize = function () {
         });
     });
 };
-
 module.exports.registerUser = function (userData) {
-    return new Promise(function (resolve, reject) {
-        if(userData.password===userData.password2){
-            let newUser = new User(userData); 
-            newUser.save().then(() => {
-                resolve();
-            }).catch((err) => {
-                  if(err.code===11000) reject("User Name already taken");
-                  else reject("There was an error creating the user: "+err);
-                  return;
-            });
-        }
-        else{reject('Passwords do not match'); return;}
-    });
+	return new Promise(function (resolve, reject) {
+		if (userData.password !== userData.password2) {
+			reject("Passwords do not match");
+		}
+
+		bcrypt
+			.genSalt(10) // Generate a "salt" using 10 rounds
+			.then((salt) => bcrypt.hash(userData.password, salt)) // encrypt the password
+			.then((hash) => {
+				userData.password = hash;
+			})
+			.catch((err) => {
+				reject("There was an error encrypting the password");
+			});
+
+		let newUser = new User(userData);
+		newUser.save((err) => {
+			if (err === 11000) {
+				reject("User Name already taken");
+			} else if (err) {
+				reject("There was an error creating the user: ", err);
+			} else {
+				resolve();
+			}
+		});
+	});
 };
 
 module.exports.checkUser = function (userData) {
