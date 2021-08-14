@@ -9,17 +9,17 @@
 *  Online (Heroku) Link: https://yliaoassign34.herokuapp.com
 *
 ********************************************************************************/ 
-
 const express = require("express");
-const exphbs = require("express-handlebars");
 const path = require("path");
 const data = require("./data-service.js");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const fs = require("fs");
 const multer = require("multer");
 const app = express();
-const dataServiceAuth = require("./data-service-auth.js" );
+const exphbs = require("express-handlebars");
 const clientSessions = require("client-sessions");
+const dataServiceAuth = require("./data-service-auth.js");
+
 
 app.engine('handlebars', exphbs({
     extname: '.handlebars',
@@ -40,11 +40,7 @@ app.engine('handlebars', exphbs({
     }}
 }));
 app.set('view engine', 'handlebars');
-app.use(function(req,res,next){
-    let route = req.baseUrl + req.path;
-    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
-    next();
-});
+
 const HTTP_PORT = process.env.PORT || 8080;
 
 // multer requires a few options to be setup to store files with file extensions
@@ -65,17 +61,34 @@ const storage = multer.diskStorage({
   //add the property "activeRoute" to "app.locals" whenever the route changes
   const upload = multer({ storage: storage });
 
-
-
-app.use(express.static('public'));
+  app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
+data.initialize()
+.then(dataServiceAuth.initialize)
+.then(function(){
+    app.listen(HTTP_PORT, function(){
+        console.log("app listening on: " + HTTP_PORT)
+    });
+    }).catch(function(err){
+        console.log("unable to start server: " + err);
+    });
+
+  
 app.use(clientSessions({
     cookieName: "session", 
     secret: "web322_assignment5", 
-    duration: 24 * 60 * 1000, 
-    activeDuration: 24 * 60 * 1000 * 60 
+    duration: 5 * 60 * 1000, 
+    activeDuration: 5 * 60 * 1000 * 60 
 }));
+
+
+app.use(function(req,res,next){
+    let route = req.baseUrl + req.path;
+    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
+    next();
+});
+
 
 app.use(function(req, res, next) {
     res.locals.session = req.session;
@@ -330,14 +343,3 @@ app.use((req, res) => {
     res.status(404).send("Page Not Found");
   });
 
-data.initialize()
-.then(dataServiceAuth.initialize)
-.then(function(){
-    app.listen(HTTP_PORT, function(){
-        console.log("app listening on: " + HTTP_PORT)
-    });
-    }).catch(function(err){
-        console.log("unable to start server: " + err);
-    });
-
-  
