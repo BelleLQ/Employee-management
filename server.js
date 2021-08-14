@@ -298,7 +298,7 @@ app.post("/register", (req,res) =>{
     dataServiceAuth.registerUser(req.body).then(()=>{
         res.render("register", {successMessage: "User created"});
     }).catch((err)=>{
-        res.render("register", {errorMessage: err, userName: JSON.stringify(req.body.userName)});
+        res.render("register", {errorMessage: err, userName: req.body.userName});
     })
 
 })
