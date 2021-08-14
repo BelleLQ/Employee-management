@@ -53,12 +53,13 @@ module.exports.registerUser = function (userData) {
 };
 
 module.exports.checkUser = (userData) => {
-    console.log(userData)
     return new Promise((resolve, reject) => {
       User.find({ userName: userData.userName })
+        .exec()
         .then(users => {
           bcrypt.compare(userData.password, users[0].password)
-            .then((res) => {
+            .then((result) => {
+                if(result===true){
                users[0].loginHistory.push({ dateTime: (new Date()).toString(), userAgent: userData.userAgent });
                User.update({ userName: users[0].userName },
                    { $set: { loginHistory: users[0].loginHistory } },
@@ -68,10 +69,12 @@ module.exports.checkUser = (userData) => {
                     resolve(users[0]);
                    })
                   .catch((err) => {
-                  reject(`There was an error verifying the user: ${err}`);
+                    reject("There was an error verifying the user: "+err);
                  });
-               }).catch((err) => {
-              reject(`Incorrect Password for user: ${userData.userName}`);
+                }
+               else reject("Incorrect Password for user: "+userData.userName);
+            }).catch((err) => {
+                console.log(err);
             })
         }).catch(err => {
           reject(`Unable to find user: ${userData.userName}`);

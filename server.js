@@ -312,12 +312,11 @@ dataServiceAuth.checkUser(req.body)
         email: user.email,
         loginHistory: user.loginHistory
     };
-    console.log(req.session.user);
     res.redirect('/employees');
 })
 .catch((err)=> {
     console.log(err);
-    res.render('login', { errorMsg: err, userName: req.body.userName });
+    res.render('login', { errorMessage: err, userName: req.body.userName });
 });
 });
 
