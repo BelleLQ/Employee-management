@@ -1,5 +1,6 @@
 # Employee-management
-This website is used to manage employees and departments.
+This website is used to manage employees and departments.\
+This website is built using Handlebars, PostgreSQL, express, and node.js.
 
 ##### URL https://yliao-employee.herokuapp.com/
 
