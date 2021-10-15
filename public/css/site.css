@@ -1,9 +1,9 @@
 /* site.css */
-a{
+#nav-brand a{
     text-decoration: none;
     color: white;
 }
-a:hover{
+#nav-brand a:hover{
     text-decoration: none;
     color: white;
 }
